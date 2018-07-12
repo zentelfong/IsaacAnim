@@ -324,11 +324,11 @@ public:
 
 	const std::string getSpritePath(int layerid)
 	{
-		for each (auto layer in m_layers)
+		for (const auto& layer : m_layers)
 		{
 			if (layer.id == layerid)
 			{
-				for each (auto spritesheet in m_spritesheets)
+				for (const auto& spritesheet : m_spritesheets)
 				{
 					if (layer.spritesheetid==spritesheet.id)
 					{
@@ -342,7 +342,7 @@ public:
 
 	int getNullIdByName(const std::string& name)
 	{
-		for each (auto layer in m_nulls)
+		for (const auto& layer : m_nulls)
 		{
 			if (layer.name == name)
 			{
@@ -354,7 +354,7 @@ public:
 
 	int getLayerIdByName(const std::string& name)
 	{
-		for each (auto layer in m_layers)
+		for (const auto& layer : m_layers)
 		{
 			if (layer.name == name)
 			{
@@ -366,7 +366,7 @@ public:
 
 	const std::string getEventName(int id)
 	{
-		for each (auto ev in m_events)
+		for (const auto& ev : m_events)
 		{
 			if (ev.id == id)
 			{

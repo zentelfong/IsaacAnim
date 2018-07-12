@@ -26,6 +26,9 @@ class CC_DLL AnimationNullItem :public cocos2d::Node
 public:
 	AnimationNullItem() :m_offsetColor(cocos2d::Color3B::BLACK){}
 	~AnimationNullItem(){}
+
+	static AnimationNullItem* create();
+
 	virtual std::string getDescription() const{ return "AnimationNullItem"; }
 	void setOffsetColor(cocos2d::Color3B offsetColor){ m_offsetColor = offsetColor; }
 	cocos2d::Color3B getOffsetColor(){ return m_offsetColor; }
@@ -46,6 +49,9 @@ public:
 
 	AnimationSprite();
 	~AnimationSprite();
+
+	static AnimationSprite* create();
+	static AnimationSprite* create(const std::string& animationFile);
 
 	bool setFileName(const std::string& animationFile);
 
@@ -89,13 +95,14 @@ public:
 	AnimationLayerItem* findLayerItem(const std::string& name);
 
 	//事件处理，例如播放角色死亡动画后执行其他操作
-	void setEventHandler(std::function<void(const std::string&)> func);
+	void setEventHandler(std::function<void(AnimationSprite*,const std::string&)> func);
+	void removeEventHandler();
 private:
 	void setAnimation(Animation* animation);
 	Animations* m_animations;
 	Animation* m_animation;
 	std::string m_animationFile;
-	std::function<void(const std::string&)> m_eventHandler;
+	std::function<void(AnimationSprite*,const std::string&)> m_eventHandler;
 	float m_lastUpdate;
 	int m_curFrame;
 	State m_state;

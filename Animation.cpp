@@ -76,12 +76,16 @@ void Animation::clear()
 
 void Animation::update(Node* node, int curFrame)
 {
-	const AnimationFrame * rootAnim = getRootAnimation()->getFrame();
+	if (!m_rootAnimation)
+		return;
+
+	const AnimationFrame * rootAnim = m_rootAnimation->getFrame();
+	if (!rootAnim)
+		return;
 
 	//¸üÐÂlayerÖ¡
 	for (auto layer : m_layerAnimations)
 	{
-
 		float dur=0;
 		int idx = layer->getIndexFromTick(curFrame,dur);
 		LayerAnimationFrame* frame = layer->getFrame(idx);

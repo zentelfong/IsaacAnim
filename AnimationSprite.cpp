@@ -91,7 +91,17 @@ cocos2d::Color3B AnimationLayerItem::getOffsetColor()
 }
 
 
-
+AnimationNullItem* AnimationNullItem::create() 
+{
+	AnimationNullItem *item = new (std::nothrow) AnimationNullItem();
+	if (item && item->init())
+	{
+		item->autorelease();
+		return item;
+	}
+	CC_SAFE_DELETE(item);
+	return nullptr;
+}
 
 AnimationSprite::AnimationSprite()
 :m_animations(nullptr), m_animation(nullptr), m_curFrame(0), m_state(State::Default), m_lastUpdate(0)
@@ -106,6 +116,30 @@ AnimationSprite::~AnimationSprite()
 	if (m_animation)
 		m_animation->release();
 }
+
+AnimationSprite* AnimationSprite::create()
+{
+	AnimationSprite *sprite = new (std::nothrow) AnimationSprite();
+	if (sprite)
+	{
+		sprite->autorelease();
+		return sprite;
+	}
+	return nullptr;
+}
+
+AnimationSprite* AnimationSprite::create(const std::string& animationFile)
+{
+	AnimationSprite *sprite = new (std::nothrow) AnimationSprite();
+	if (sprite && sprite->setFileName(animationFile))
+	{
+		sprite->autorelease();
+		return sprite;
+	}
+	CC_SAFE_DELETE(sprite);
+	return nullptr;
+}
+
 
 bool AnimationSprite::setFileName(const std::string& animationFile)
 {
@@ -177,7 +211,7 @@ void AnimationSprite::update(float delta)
 		m_animation->update(this, m_curFrame);
 
 		auto triggers=m_animation->getTriggers();
-		for each (auto trigger in triggers)
+		for (const auto& trigger : triggers)
 		{
 			if (trigger.atFrame == m_curFrame)
 			{
@@ -252,7 +286,7 @@ bool AnimationSprite::isPlaying(const std::string& AnimationName)
 void AnimationSprite::onEventTriggered(const std::string& EventName)
 {
 	if (m_eventHandler)
-		m_eventHandler(EventName);
+		m_eventHandler(this,EventName);
 }
 
 int AnimationSprite::getLayerCount()
@@ -271,9 +305,14 @@ const std::string AnimationSprite::getDefaultAnimationName()
 		return "";
 }
 
-void AnimationSprite::setEventHandler(std::function<void(const std::string&)> func)
+void AnimationSprite::setEventHandler(std::function<void(AnimationSprite*,const std::string&)> func)
 {
 	m_eventHandler = func;
+}
+
+void AnimationSprite::removeEventHandler()
+{
+	m_eventHandler = NULL;
 }
 
 void AnimationSprite::setAnimation(Animation* animation)
@@ -303,7 +342,7 @@ void AnimationSprite::setAnimation(Animation* animation)
 	auto nullAnimations = m_animation->getNullAnimations();
 	for (auto animation : nullAnimations)
 	{
-		cocos2d::Node* node = getChildByTag(animation->getNullId() + 0xffff);
+		AnimationNullItem* node =static_cast<AnimationNullItem*>(getChildByTag(animation->getNullId() + 0xffff));
 		if (!node)
 		{
 			node = AnimationNullItem::create();
